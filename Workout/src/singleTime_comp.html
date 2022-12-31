@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<style>
+
+    /* ==UserStyle==
+  @name           mastodon.social - 12/14/2022, 9:37:56 AM
+  @namespace      github.com/openstyles/stylus
+  @version        1.0.0
+  @description    Styles images posted on mastodon.social based on whether or not they have alt text.
+  @author         @Meyerweb@mastodon.social, https://meyerweb.com/
+  ==/UserStyle== */
+
+  @-moz-document regexp(".*\.social.*") {
+    .media-gallery__item-thumbnail img:not([alt]) {
+      filter: grayscale(1) contrast(0.5);
+    }
+    .media-gallery__item-thumbnail img:not([alt]):hover {
+      filter: none;
+    }
+    .media-gallery__item-thumbnail:has(img[alt]) {
+      position: relative;
+    }
+    .media-gallery__item-thumbnail:has(img[alt])::after {
+      content: "ALT";
+      position: absolute;
+      bottom: 0;
+      right: 0;
+      border-radius: 5px 0 0 0;
+      border: 1px solid #FFF3;
+      color: #FFFD;
+      background: #000A;
+      border-width: 1px 0 0 1px;
+      padding-block: 0.5em 0.4em;
+      padding-inline: 0.7em 0.8em;
+      font: bold 90% sans-serif;
+    }
+  }
+
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@700;900&display=swap');
+
+  .topbar{
+    width: 45%;
+    height: 8.5vh;
+    margin: 0 auto;
+    padding-left: 6vw;
+    display: flex;
+    align-items: center;
+    transform:translateY(40px);
+
+    font-size: 30px;
+    color: white;
+    font-family: 'Noto Sans TC';
+    letter-spacing: 10px;
+    
+    border-radius: 50px;
+    background: #DE3636;
+  }
+  
+  .neurobox{
+    width: 10vw;
+    height: 20vh;
+    border-radius: 50px;
+    background: #dedede;
+    font-family: "Noto Sans TC";
+  }
+
+  .mainBox{
+    margin: 0 auto;
+    width: 700px;
+    height: 500px;
+    border-radius: 50px;
+    background: #dedede;
+    font-family: "Noto Sans TC";
+  }
+
+  .mainText{
+    text-align: center;
+    font-size: 40px;
+    letter-spacing: 6px;
+    color: #4d4d4d;
+  }
+
+  .mainText2{
+    text-align: center;
+    font-size: 70px;
+    color: #DE3636;
+  }
+  .startBtn{
+    width: 10vw;
+    height: 10vh;
+    font-size: 26px; 
+    background-color: #dedede; 
+    color: #de3636;
+    border-radius: 50px
+  }
+  .startBtn:hover{
+    background-color: #fff;
+    color: #de3636;
+  }
+  #mainPageBtn{
+    background-color: #dedede; 
+    margin-left: 3vw; 
+    width: 8vw; 
+    height: 5vh; 
+    font-size: 26px; 
+    border-radius: 50px
+  }
+  #mainPageBtn:hover{
+    background-color: #fff;
+    color: #de3636;
+  }
+</style>
+
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>單人競賽頁面 計時類</title>
+  </head>
+  <body style="background-color:black;">
+    <div class="topbar">
+      健身競賽系統 Workout
+      <button id="mainPageBtn">回到首頁</button>
+    </div>
+
+    <div style="display: grid; grid-template-columns: auto auto auto auto auto auto; column-gap: 2vw; justify-content: center; align-content: center; margin-top: 12vh">
+      <div class="mainBox" style="grid-column: 1 / span 5;">
+        <h2 class="mainText" style="transform:translateY(40px);">當前距離</h2>
+        <div style="display: flex; flex-direction: row; justify-content: center;">
+          <span id="userDistance" class="mainText2">10</span>
+          <span class="mainText2">/</span>
+          <span id="goalDistance" class="mainText2">0</span>
+          <span class="mainText2" style="color:black; font-size:1.5em; padding-top:4vh">(&plusmn;5)</span>
+          <span class="mainText2" style="margin-left: 1vw; margin-bottom: 0; font-size: 1.5em; padding-top: 4vh; color:black">cm</span>
+        </div>
+        <h3 class="mainText">計時</h3>
+        <div style="display: flex; flex-direction: row; justify-content: center;">
+          <span id="curSecond" class="mainText2">0</span>
+          <span class="mainText2">/</span>
+          <span id="goalSecond" class="mainText2">0</span>
+          <span class="mainText2" style="margin-left: 1vw; margin-bottom: 0; font-size: 2em; padding-top: 4vh;">s</span>
+        </div>
+      </div>
+
+      <div style="display: flex; align-items: center; flex-direction: column; grid-column: 6 / span 1;">
+        <div style="margin-bottom: 2vh; height: 10vh; padding-bottom: 2vh;"  >
+          <p class="mainText2" style="font-size:2em; color: white">平板支撐</p>
+        </div>
+        <button id="challengeBtn" class="startBtn">
+          挑戰極限
+        </button>
+        <button id="setBtn" class="startBtn">
+          組數挑戰
+        </button>
+        <div style="width: 10vw; height: 7vh; margin-top: 15vh;">
+          <p style="color: white; margin-left: 1vw; margin-top: 1vh; font-size: 2em">組數: <span id="setCount" style="color: white"></span></p>
+        </div>
+      </div>
+    </div>
+  </body>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script>
+    const socket = io();
+    socket.on(`distance${localStorage.getItem("userId")}`, (distance) => {
+      document.getElementById('userDistance').innerText = distance;
+    })
+
+    document.getElementById("setCount").innerHTML = localStorage.getItem("setCount");
+    document.getElementById("goalSecond").innerText = localStorage.getItem("second");
+    // 設定目標距離
+    document.getElementById("goalDistance").innerText = localStorage.getItem("distance");
+    document.getElementById("mainPageBtn").onclick = () => {
+      window.location = "/";
+    }
+
+    // 組數挑戰模式
+    document.getElementById("setBtn").onclick = () => {
+      let flag = 3
+      document.getElementById("setBtn").innerText = flag;
+      let countDown = setInterval(() => {
+          flag--;
+          document.getElementById("setBtn").innerText = flag;
+          if(flag === 0){
+              document.getElementById("setBtn").innerText = "Start!!!";
+              clearInterval(countDown);
+          }
+      }, 1000)
+
+      // 倒數完後開始
+      setTimeout(() => {
+        // 處理plunk開始事件============================
+        socket.emit(`plunk-inf-challenge-start`, {userId: localStorage.getItem('userId'), distance: localStorage.getItem("distance")})
+        //=============================================
+        let curSecond = 0;
+        let countDown2 = setInterval(() => {
+          curSecond++;
+          document.getElementById("curSecond").innerText = curSecond;
+          // 時間到結束，組數加一
+          if(curSecond === Number(localStorage.getItem("second"))){
+            localStorage.setItem("setCount", Number(localStorage.getItem("setCount"))+1);
+            document.getElementById("setCount").innerHTML = localStorage.getItem("setCount")
+            socket.emit(`plunk-set-challenge-end`, {userId: localStorage.getItem('userId')});
+            clearInterval(countDown2);
+            document.getElementById("setBtn").innerText = "ReStart";
+            document.getElementById("setBtn").onclick = () => {
+                window.location.reload();
+            }
+          }
+        }, 1000)
+
+        // plunk結束處理
+        socket.on(`plunk-inf-challenge-stop${localStorage.getItem("userId")}`, () => {
+          clearInterval(countDown2);
+          document.getElementById("curSecond").innerText = "失敗";
+          document.getElementById("setBtn").innerText = "ReStart";
+          document.getElementById("setBtn").onclick = () => {
+              window.location.reload();
+          }
+        })
+      }, 3000)
+    }
+
+    // 挑戰極限模式
+    document.getElementById("challengeBtn").onclick = () => {
+      document.getElementById("goalSecond").innerHTML = "&infin;";
+      let flag = 3
+      document.getElementById("challengeBtn").innerText = flag;
+      let countDown = setInterval(() => {
+          flag--;
+          document.getElementById("challengeBtn").innerText = flag;
+          if(flag === 0){
+              document.getElementById("challengeBtn").innerText = "Start!!!";
+              clearInterval(countDown);
+          }
+      }, 1000)
+      // 倒數完後開始
+      setTimeout(() => {
+          // 處理plunk開始事件============================
+          socket.emit(`plunk-inf-challenge-start`, {userId: localStorage.getItem("userId"), distance: localStorage.getItem("distance")})
+          //=============================================
+          let curSecond = 1;
+          let countDown2 = setInterval(() => {
+            document.getElementById("curSecond").innerText = curSecond;
+            curSecond++;
+          }, 1000)
+
+          // plunk結束處理
+          socket.on(`plunk-inf-challenge-stop`, (data) => {
+            if(data.userId === localStorage.getItem("userId")){
+              clearInterval(countDown2);
+              document.getElementById("hint").innerText = "挑戰結束";
+              document.getElementById("againBtn").hidden = false;
+              document.getElementById("againBtn").onclick = () => {
+                window.location.reload();
+              }
+            }
+          })
+      }, 3000)
+    }
+
+  </script>
+</html>
+
+

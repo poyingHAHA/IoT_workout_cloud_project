@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>單人競賽頁面 計次類</title>
+  </head>
+  <body>
+    <style>
+      @-moz-document regexp(".*\.social.*") {
+        .media-gallery__item-thumbnail img:not([alt]) {
+          filter: grayscale(1) contrast(0.5);
+        }
+        .media-gallery__item-thumbnail img:not([alt]):hover {
+          filter: none;
+        }
+        .media-gallery__item-thumbnail:has(img[alt]) {
+          position: relative;
+        }
+        .media-gallery__item-thumbnail:has(img[alt])::after {
+          content: "ALT";
+          position: absolute;
+          bottom: 0;
+          right: 0;
+          border-radius: 5px 0 0 0;
+          border: 1px solid #fff3;
+          color: #fffd;
+          background: #000a;
+          border-width: 1px 0 0 1px;
+          padding-block: 0.5em 0.4em;
+          padding-inline: 0.7em 0.8em;
+          font: bold 90% sans-serif;
+        }
+      }
+
+      @import url("https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@700;900&display=swap");
+
+      .topbar {
+        width: 45%;
+        height: 8.5vh;
+        margin: 0 auto;
+        padding-left: 6vw;
+        display: flex;
+        align-items: center;
+        transform: translateY(40px);
+
+        font-size: 30px;
+        color: white;
+        font-family: "Noto Sans TC";
+        letter-spacing: 10px;
+
+        border-radius: 50px;
+        background: #de3636;
+      }
+
+      .boxes {
+        margin-bottom: 5em;
+        transform: translateX(-450px) translateY(200px);
+      }
+
+      .neurobox {
+        width: 10vw;
+        height: 20vh;
+        border-radius: 50px;
+        background: #dedede;
+        font-family: "Noto Sans TC";
+      }
+
+      .raceText {
+        font-family: "Noto Sans TC";
+        text-align: center;
+        font-size: 30px;
+        margin: auto;
+        color: #4d4d4d;
+        transform: translateY(24px);
+      }
+
+      .raceText2 {
+        text-align: center;
+        font-size: 30px;
+        color: #de3636;
+        margin: auto;
+      }
+
+      .mainBox {
+        margin: 0 auto;
+        width: 700px;
+        height: 500px;
+        border-radius: 50px;
+        background: #dedede;
+        font-family: "Noto Sans TC";
+      }
+
+      .mainText {
+        text-align: center;
+        font-size: 2.5em;
+        letter-spacing: 6px;
+        color: #4d4d4d;
+      }
+
+      .mainText2 {
+        text-align: center;
+        font-size: 5em;
+        color: #de3636;
+      }
+
+      #startBtn{
+        font-size: 26px; 
+        background-color: #dedede; 
+        color: #4d4d4d;
+      }
+      #startBtn:hover{
+        background-color: #fff;
+        color: #de3636;
+      }
+      #mainPageBtn{
+        background-color: #dedede; 
+        margin-left: 3vw; 
+        width: 8vw; 
+        height: 5vh; 
+        font-size: 26px; 
+        border-radius: 50px
+      }
+      #mainPageBtn:hover{
+        background-color: #fff;
+        color: #de3636;
+      }
+
+      body {
+        background-color: black;
+      }
+    </style>
+    <div class="topbar">
+        健身競賽系統 Workout 
+        <button id="mainPageBtn">回到首頁</button>
+    </div>
+    <div style="display: grid; grid-template-columns: auto auto auto auto auto auto; column-gap: 2vw; justify-content: center; align-content: center; margin-top: 12vh">
+      
+      <div class="mainBox" style="grid-column: 1 / span 5;">
+        <h2 class="mainText" style="transform: translateY(40px)">當前次數</h2>
+        <div style="display: flex; justify-content: center;">
+            <span id="doneCount" class="mainText2">0</span>
+            <span class="mainText2">/</span>
+            <span id="goal" class="mainText2">0</span>
+        </div>
+        <h3 id="pushUpAmount" class="mainText">倒數計時</h3>
+        <h2 id="pushUpCount" class="mainText2" style="transform: translateY(-36px)"></h2>
+      </div>
+  
+      <div style="display: flex; align-items: center; flex-direction: column; grid-column: 6 / span 1;">
+          <div style="margin-bottom: 2vh; height: 10vh; padding-bottom: 2vh;" class="neurobox" >
+            <p class="mainText2" style="font-size:2em">伏地挺身</p>
+          </div>
+          <button id="startBtn" class="neurobox">
+              準備開始
+          </button>
+          <div style="width: 10vw; height: 7vh; margin-top: 15vh;">
+              <p style="color: white; margin-left: 1vw; margin-top: 1vh; font-size: 2em">組數: <span id="setCount" style="color: white"></span></p>
+          </div>
+      </div>
+    </div>
+  </body>
+  
+  <script src="/socket.io/socket.io.js"></script>
+  <script>
+    const socket = io();
+    socket.on("connect", () => {
+        console.log(socket.id);
+    });
+
+    document.getElementById("goal").innerText = localStorage.getItem("goal");
+    document.getElementById("pushUpCount").innerHTML = localStorage.getItem("time")+" <span>s</span>";
+    document.getElementById("mainPageBtn").onclick = () => {
+        window.location = "/";
+    }
+    document.getElementById("setCount").innerHTML = localStorage.getItem("setCount");
+
+    // 遊戲開始
+    document.getElementById("startBtn").onclick = () => {
+        // 倒數3秒
+        let flag = 3
+        document.getElementById("startBtn").innerText = flag;
+        let countDown = setInterval(() => {
+            flag--;
+            document.getElementById("startBtn").innerText = flag;
+            if(flag === 0){
+                document.getElementById("startBtn").innerText = "Start!!!";
+                clearInterval(countDown);
+            }
+        }, 1000)
+
+        // 倒數完後開始
+        setTimeout(() => {
+            // 發送push up 開始事件
+            socket.emit(`push-up-start`, {distance: localStorage.getItem("distance"), userId: localStorage.getItem("userId")})
+            socket.on(`push-up-count${localStorage.getItem("userId")}`, (count)=>{
+              document.getElementById("doneCount").innerText = count;
+            })
+            let timeCount = Number(localStorage.getItem("time"));
+            let countDown2 = setInterval(() => {
+                timeCount -= 1;
+                document.getElementById("pushUpCount").innerHTML = timeCount+" <span>s</span>";
+                // 時間到結束
+                if(timeCount === 0){
+                    socket.emit(`push-up-stop`, {userId: localStorage.getItem("userId")});
+                    // 組數計算: 時間到時doneCount >= goal算一組
+                    if(Number(document.getElementById("doneCount").innerText) >= Number(localStorage.getItem("goal"))){
+                        localStorage.setItem("setCount", Number(localStorage.getItem("setCount"))+1);
+                        document.getElementById("setCount").innerHTML = localStorage.getItem("setCount")
+                    }
+
+                    clearInterval(countDown2)
+                    document.getElementById("pushUpCount").innerHTML = "Time's Up";
+                    document.getElementById("startBtn").innerText = "ReStart";
+                    document.getElementById("startBtn").onclick = () => {
+                        window.location.reload();
+                    }
+                }
+            }, 1000)
+        }, 3000)
+    }
+</script>
+</html>
