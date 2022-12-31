@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/HOSHICHEN7267/Workout#readme",
   "dependencies": {
+    "dotenv": "^16.0.3",
     "express": "*",
     "nodemon": "^2.0.20",
     "socket.io": "*"

@@ -9,7 +9,7 @@ const singlePlunk = require("./router/single_plunk")
 const dualPushup = require("./router/dual_pushUp")
 const dualPlunk = require("./router/dual_plunk")
 
-const port = 3000;
+const port = process.env.PORT || 3000;
 app.use(express.json());
 
 app.use(route);

@@ -9,6 +9,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "dotenv": "^16.0.3",
     "johnny-five": "^2.1.0",
     "readline-sync": "^1.4.10",
     "socket.io-client": "^4.5.4",

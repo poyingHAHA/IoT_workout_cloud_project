@@ -3,12 +3,14 @@ const { hideBin } = require('yargs/helpers')
 const argv = yargs(hideBin(process.argv)).argv
 const { Board, Proximity, Button } = require("johnny-five");
 const io = require("socket.io-client");
+require('dotenv').config()
 
 const board = new Board({
   port: argv.port // node index.js --port "COMX"
 });
 
-const socket = io("ws://localhost:3000");
+const socket = io(process.env.SOCKET_SERVER);
+// const socket = io("ws://localhost:3000");
 let userId = 0;
 // 事件參數管理
 let count = 0;
