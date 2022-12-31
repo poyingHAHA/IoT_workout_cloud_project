@@ -52,8 +52,8 @@ io.on('connection', async(socket) => {
   socket.on("plunk-inf-challenge-stop", (data) => {
     io.emit(`plunk-inf-challenge-stop`, data);
   })
-  socket.on("plunk-set-challenge-end", () => {
-    io.emit(`plunk-set-challenge-end`);
+  socket.on("plunk-set-challenge-end", (data) => {
+    io.emit(`plunk-set-challenge-end${data.userId}`);
   })
   // =====================================================
 

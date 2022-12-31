@@ -211,12 +211,14 @@
         }, 1000)
 
         // plunk結束處理
-        socket.on(`plunk-inf-challenge-stop${localStorage.getItem("userId")}`, () => {
-          clearInterval(countDown2);
-          document.getElementById("curSecond").innerText = "失敗";
-          document.getElementById("setBtn").innerText = "ReStart";
-          document.getElementById("setBtn").onclick = () => {
-              window.location.reload();
+        socket.on(`plunk-inf-challenge-stop`, (data) => {
+          if(data.userId === localStorage.getItem("userId")){
+            clearInterval(countDown2);
+            document.getElementById("curSecond").innerText = "失敗";
+            document.getElementById("setBtn").innerText = "ReStart";
+            document.getElementById("setBtn").onclick = () => {
+                window.location.reload();
+            }
           }
         })
       }, 3000)

@@ -9,8 +9,8 @@ const board = new Board({
   port: argv.port
 });
 
-const socket = io(process.env.SOCKET_SERVER);
-// const socket = io("ws://localhost:3000");
+const socket = io(process.env.SOCKET_SERVER); // cloud server
+// const socket = io("ws://localhost:3000"); // localhost
 
 let userId = 0;
 // 事件參數管理
@@ -63,10 +63,10 @@ board.on("ready", () => {
     // push up次數邏輯
     if(pushUpStart){
       console.log("伏地挺身開始: ",Math.floor(count/2))
-      if (cm > pushUpDistance - 10 && flag === 1) {
+      if (cm > pushUpDistance - 5 && flag === 1) {
         count += 1;
         flag = 0;
-      } else if (flag === 0 && cm < 15) {
+      } else if (flag === 0 && cm < 10) {
         count += 1;
         flag = 1;
       }
