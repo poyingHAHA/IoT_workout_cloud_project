@@ -252,7 +252,7 @@
           socket.on(`plunk-inf-challenge-stop`, (data) => {
             if(data.userId === localStorage.getItem("userId")){
               clearInterval(countDown2);
-              document.getElementById("hint").innerText = "挑戰結束";
+              document.getElementById("curSecond").innerText = "挑戰結束";
               document.getElementById("againBtn").hidden = false;
               document.getElementById("againBtn").onclick = () => {
                 window.location.reload();

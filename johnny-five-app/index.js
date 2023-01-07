@@ -9,8 +9,8 @@ const board = new Board({
   port: argv.port // node index.js --port "COMX"
 });
 
-const socket = io(process.env.SOCKET_SERVER); // cloud server
-// const socket = io("ws://localhost:3000"); // localhost
+// const socket = io(process.env.SOCKET_SERVER); // cloud server
+const socket = io("ws://localhost:3000"); // localhost
 
 let userId = 0;
 // 事件參數管理
@@ -55,7 +55,7 @@ board.on("ready", () => {
   });
 
 
-  proximity.within([0, 100], "cm", () => {
+  proximity.within([0, 50], "cm", () => {
     const { cm } = proximity;
     // console.log(cm)
     socket.emit("data", {userId, data: cm});

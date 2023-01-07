@@ -55,7 +55,7 @@ board.on("ready", () => {
   });
 
 
-  proximity.within([0, 100], "cm", () => {
+  proximity.within([0, 50], "cm", () => {
     const { cm } = proximity;
     // console.log(cm)
     socket.emit("data", {userId, data: cm});

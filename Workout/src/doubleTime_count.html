@@ -114,9 +114,10 @@
           </p>
           <br/>
           <p class="raceText2">伏地挺身</p>
+          <p style="color:white; font-size: 1.5em; margin-top: 5vh" class="dist">距離: <span style="color:white; font-size: 2em" id="currentDisance"></span></p>
         </div>
       </div>
-  
+      
       <div class="boxes">
         <div class="neurobox">
           <p class="raceText">
@@ -146,6 +147,9 @@
       } 
       const socket = io();
       socket.on("connect", () => {
+        socket.on(`distance${localStorage.getItem("userId")}`, (data) => {
+          document.getElementById("currentDisance").innerHTML = data;
+        })
         // 接收並顯示對手次數
         socket.on("push-up-count-to", (data)=>{
           // console.log(data)

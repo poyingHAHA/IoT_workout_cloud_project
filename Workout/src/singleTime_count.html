@@ -147,17 +147,18 @@
         <h3 id="pushUpAmount" class="mainText">倒數計時</h3>
         <h2 id="pushUpCount" class="mainText2" style="transform: translateY(-36px)"></h2>
       </div>
-  
+      
       <div style="display: flex; align-items: center; flex-direction: column; grid-column: 6 / span 1;">
-          <div style="margin-bottom: 2vh; height: 10vh; padding-bottom: 2vh;" class="neurobox" >
-            <p class="mainText2" style="font-size:2em">伏地挺身</p>
-          </div>
-          <button id="startBtn" class="neurobox">
-              準備開始
-          </button>
-          <div style="width: 10vw; height: 7vh; margin-top: 15vh;">
-              <p style="color: white; margin-left: 1vw; margin-top: 1vh; font-size: 2em">組數: <span id="setCount" style="color: white"></span></p>
-          </div>
+        <div style="margin-bottom: 2vh; height: 10vh; padding-bottom: 2vh;" class="neurobox" >
+          <p class="mainText2" style="font-size:2em">伏地挺身</p>
+        </div>
+        <button id="startBtn" class="neurobox">
+          準備開始
+        </button>
+        <p style="color:white; font-size: 1.5em" class="dist">距離: <span style="color:white; font-size: 2em" id="currentDisance"></span></p>
+        <div style="width: 10vw; height: 7vh; ">
+          <p style="color: white; margin-left: 1vw; margin-top: 1vh; font-size: 2em">組數: <span id="setCount" style="color: white"></span></p>
+        </div>
       </div>
     </div>
   </body>
@@ -167,6 +168,9 @@
     const socket = io();
     socket.on("connect", () => {
         console.log(socket.id);
+        socket.on(`distance${localStorage.getItem("userId")}`, (data) => {
+          document.getElementById("currentDisance").innerHTML = data;
+        })
     });
 
     document.getElementById("goal").innerText = localStorage.getItem("goal");
