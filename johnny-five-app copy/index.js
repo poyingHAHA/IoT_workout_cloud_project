@@ -66,7 +66,7 @@ board.on("ready", () => {
       if (cm > pushUpDistance - 5 && flag === 1) {
         count += 1;
         flag = 0;
-      } else if (flag === 0 && cm < 10) {
+      } else if (flag === 0 && cm < 13) {
         count += 1;
         flag = 1;
       }

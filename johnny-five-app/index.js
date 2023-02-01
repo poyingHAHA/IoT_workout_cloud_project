@@ -9,8 +9,8 @@ const board = new Board({
   port: argv.port // node index.js --port "COMX"
 });
 
-// const socket = io(process.env.SOCKET_SERVER); // cloud server
-const socket = io("ws://localhost:3000"); // localhost
+const socket = io(process.env.SOCKET_SERVER); // cloud server
+// const socket = io("ws://localhost:3000"); // localhost
 
 let userId = 0;
 // 事件參數管理
@@ -51,7 +51,7 @@ board.on("ready", () => {
   const proximity = new Proximity({
     controller: "HCSR04",
     pin: "A0",
-    freq: 100,
+    freq: 70,
   });
 
 
@@ -66,13 +66,16 @@ board.on("ready", () => {
       if (cm > pushUpDistance - 5 && flag === 1) {
         count += 1;
         flag = 0;
-      } else if (flag === 0 && cm < 10) {
+      } else if (flag === 0 && cm < 13) {
         count += 1;
         flag = 1;
       }
       socket.emit(`push-up-count`, {userId, count: Math.floor(count/2)});
     }
-    
+  });
+
+  proximity.within([0, 30], "cm", () => {
+    const { cm } = proximity;
     // 處理plunk失誤: 超過+-5就失誤
     if(plunkStart){
       if(Math.abs(cm - plunkDistance) > 5){
@@ -82,5 +85,5 @@ board.on("ready", () => {
         socket.emit(`plunk-inf-challenge-stop`, {userId})
       }
     }
-  });
+  })
 });
